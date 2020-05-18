@@ -7,20 +7,26 @@
 #include "beep.h"
 #include "key.h"
 #include "exti.h"
+#include "iwdg.h"
 
 int main(void)
 {
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-	delay_init(168);    
-	uart_init(115200); 	
-	LED_Init();				   
-	BEEP_Init();        
-	EXTIX_Init();       
-	LED0=0;					    
+	delay_init(168);
+	LED_Init();
+	KEY_Init();
+	BEEP_Init();
+	
+	delay_ms(100);
+	LED0=0;
+
+	IWDG_Init(4,500);
+	
 	while(1)
 	{
-  	printf("OK\r\n");	
-		delay_ms(1000);	  
+		if(KEY_Scan(0)==WKUP_PRES)
+		{
+			IWDG_ReloadCounter();
+		}
+		delay_ms(10);
 	}
-	
 }
