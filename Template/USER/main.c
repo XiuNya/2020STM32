@@ -8,25 +8,24 @@
 #include "key.h"
 #include "exti.h"
 #include "iwdg.h"
+#include "wwdg.h"
 
 int main(void)
 {
+	
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 	delay_init(168);
 	LED_Init();
 	KEY_Init();
 	BEEP_Init();
 	
-	delay_ms(100);
+	delay_ms(300);
 	LED0=0;
-
-	IWDG_Init(4,500);
 	
+	WWDG_Init(0x7F,0x5F,WWDG_Prescaler_8);
+
 	while(1)
 	{
-		if(KEY_Scan(0)==WKUP_PRES)
-		{
-			IWDG_ReloadCounter();
-		}
-		delay_ms(10);
+		LED0=1;
 	}
 }
