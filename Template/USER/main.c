@@ -9,6 +9,7 @@
 #include "exti.h"
 #include "iwdg.h"
 #include "wwdg.h"
+#include "timer.h"
 
 int main(void)
 {
@@ -18,14 +19,11 @@ int main(void)
 	LED_Init();
 	KEY_Init();
 	BEEP_Init();
-	
-	delay_ms(300);
-	LED0=0;
-	
-	WWDG_Init(0x7F,0x5F,WWDG_Prescaler_8);
+	TIM3_MyInit(4999,8399);
 
 	while(1)
 	{
-		LED0=1;
+		LED0=!LED0;
+		delay_ms(300);
 	}
 }
