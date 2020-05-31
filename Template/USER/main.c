@@ -10,20 +10,32 @@
 #include "iwdg.h"
 #include "wwdg.h"
 #include "timer.h"
+#include "pwm.h"
 
 int main(void)
 {
-	
+	u16 led0pwmval=0;
+	u8 dir=1;
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 	delay_init(168);
-	LED_Init();
-	KEY_Init();
-	BEEP_Init();
-	TIM3_MyInit(4999,8399);
+	uart_init(115200);
+	TIM14_PWM_Init(500-1,84-1);
+	//LED_Init();
+	//KEY_Init();
+	//BEEP_Init();
+	//TIM3_MyInit(4999,8399);
 
 	while(1)
 	{
-		LED0=!LED0;
-		delay_ms(300);
+		delay_ms(100);
+		if(dir)
+			led0pwmval++;
+		else
+			led0pwmval--;
+		if(led0pwmval>300)
+			dir=0;
+		if(led0pwmval==0)
+			dir=1;
+		TIM_SetCompare1(TIM14,led0pwmval);
 	}
 }
