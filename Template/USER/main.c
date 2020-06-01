@@ -21,13 +21,13 @@ int main(void)
 	uart_init(115200);
 	TIM14_PWM_Init(500-1,84-1);
 	//LED_Init();
-	//KEY_Init();
-	//BEEP_Init();
+	KEY_Init();
+	BEEP_Init();
 	//TIM3_MyInit(4999,8399);
 
 	while(1)
 	{
-		delay_ms(100);
+		delay_ms(10);
 		if(dir)
 			led0pwmval++;
 		else
