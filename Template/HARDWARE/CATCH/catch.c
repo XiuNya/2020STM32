@@ -32,8 +32,8 @@ void TIM14_PWM_Init(u32 arr,u32 psc)
 	TIM_OCInitStruct.TIM_Pulse=0;	
 	TIM_OC1Init(TIM14,&TIM_OCInitStruct);
 	
-	TIM_OC1PreloadConfig(TIM14,TIM_OCPreload_Enable);
-	//TIM_OC2PreloadConfig(TIM14,TIM_OCPreload_Enable);
+	//TIM_OC1PreloadConfig(TIM14,TIM_OCPreload_Enable);
+	TIM_OC2PreloadConfig(TIM14,TIM_OCPreload_Enable);
 	TIM_ARRPreloadConfig(TIM14,ENABLE);
 	TIM_Cmd(TIM14,ENABLE);
 	
