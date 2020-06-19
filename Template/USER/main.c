@@ -6,41 +6,65 @@
 #include "led.h"
 #include "beep.h"
 #include "key.h"
-#include "exti.h"
-#include "iwdg.h"
-#include "wwdg.h"
+
+//#include "exti.h"
+//#include "iwdg.h"
+//#include "wwdg.h"
 //#include "timer.h"
 //#include "pwm.h"
 //#include "catch.h"
-#include "tpad.h"
+//#include "tpad.h"
+#include "lcd.h"
+#include "rng.h"
 
 int main(void)
 {
+	u32 random;	
 	u8 t=0;
+	u8 key;
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 	delay_init(168);
 	uart_init(115200);
 	
-	//TIM14_PWM_Init(500-1,84-1);
-	//TIM5_CH1_Cap_Init(0xffffffff,84-1);
 	LED_Init();
-	//KEY_Init();
-	//BEEP_Init();
-	//TIM3_MyInit(4999,8399);
-	TPAD_Init(8);
+	KEY_Init();
+	LCD_Init();
+	
+	POINT_COLOR=RED;
+	LCD_ShowString(30,50,200,16,16,"STM32F4");
+	LCD_ShowString(30,70,200,16,16,"RNG TEST");
 
+	while(RNG_Init())
+	{
+		LCD_ShowString(30,130,200,16,16,"RNG ERROR!");
+		delay_ms(200);
+		LCD_ShowString(30,130,200,16,16,"RNG Ttying...");
+	}
+	
+	LCD_ShowString(30,130,200,16,16,"RNG Ready!");
+	LCD_ShowString(30,150,200,16,16,"KEY0: Get Random Num");
+	LCD_ShowString(30,180,200,16,16,"Random Num");
+	LCD_ShowString(30,210,200,16,16,"Random Num[0-9]:");
+	
+	POINT_COLOR=BLUE;
 	while(1)
 	{
-		if(TPAD_Scan(0))
+		delay_ms(10);
+		key=KEY_Scan(0);
+		
+		if(key==KEY0_PRES)
 		{
-			LED1=!LED1;
+			random=RNG_Get_RandomNum();
+			LCD_ShowNum(30+8*11,180,random,10,16);
 		}
-		t++;
-		if(t==15)
+		
+		if(t%20==0)
 		{
-			t=0;
 			LED0=!LED0;
+			random=RNG_Get_RandomRange(0,9);
+			LCD_ShowNum(30+8*16,210,random,1,16);
 		}
 		delay_ms(10);
+		t++;
 	}
 }
