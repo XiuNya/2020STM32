@@ -15,56 +15,42 @@
 //#include "catch.h"
 //#include "tpad.h"
 #include "lcd.h"
-#include "rng.h"
+#include "adc.h"
 
 int main(void)
 {
-	u32 random;	
-	u8 t=0;
-	u8 key;
+	u16 adcx;
+	float temp;
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 	delay_init(168);
 	uart_init(115200);
 	
 	LED_Init();
-	KEY_Init();
 	LCD_Init();
+	Adc_Init();
 	
 	POINT_COLOR=RED;
 	LCD_ShowString(30,50,200,16,16,"STM32F4");
 	LCD_ShowString(30,70,200,16,16,"RNG TEST");
-
-	while(RNG_Init())
-	{
-		LCD_ShowString(30,130,200,16,16,"RNG ERROR!");
-		delay_ms(200);
-		LCD_ShowString(30,130,200,16,16,"RNG Ttying...");
-	}
-	
-	LCD_ShowString(30,130,200,16,16,"RNG Ready!");
-	LCD_ShowString(30,150,200,16,16,"KEY0: Get Random Num");
-	LCD_ShowString(30,180,200,16,16,"Random Num");
-	LCD_ShowString(30,210,200,16,16,"Random Num[0-9]:");
 	
 	POINT_COLOR=BLUE;
+	LCD_ShowString(30,130,200,16,16,"ADC1_CH5_VAL:");
+	LCD_ShowString(30,150,200,16,16,"ADC1_CH5_VAL=0.000V");
+
 	while(1)
 	{
-		delay_ms(10);
-		key=KEY_Scan(0);
+		adcx=Get_Adc_Average(ADC_Channel_5,20);
+		LCD_ShowxNum(134,130,adcx,4,16,0);
+		temp=(float)adcx*(3.3/4096);
+		adcx=temp;
 		
-		if(key==KEY0_PRES)
-		{
-			random=RNG_Get_RandomNum();
-			LCD_ShowNum(30+8*11,180,random,10,16);
-		}
+		LCD_ShowxNum(134,150,adcx,1,16,0);
+		temp-=adcx;
+		temp*=1000;
 		
-		if(t%20==0)
-		{
-			LED0=!LED0;
-			random=RNG_Get_RandomRange(0,9);
-			LCD_ShowNum(30+8*16,210,random,1,16);
-		}
-		delay_ms(10);
-		t++;
+		LCD_ShowxNum(150,150,temp,3,16,0x80);
+		LED0=!LED0;
+		delay_ms(250);
+
 	}
 }
